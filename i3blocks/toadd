@@ -1,0 +1,11 @@
+[power_menu]
+command=~/.config/i3blocks/scripts/power-menu.sh
+interval=once
+label=<span color="#f1fa8c"> </span>
+border=#f1fa8c
+border_top=1
+border_right=0
+border_bottom=0
+border_left=0
+
+
