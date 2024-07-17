@@ -6,37 +6,39 @@
 # | |___) | |_) | | (_) | (__|   <\__ \
 # |_|____/|_.__/|_|\___/ \___|_|\_\___/
 
-align=center
 separator=false
-color=#f8f8f2
-separator_block_width=15
 markup=pango
 
+[workspace]
+command=~/.config/i3blocks/workspaces.sh
+interval=1
+
 [battery]
+label=<span color="#ffffff"><b> </b></span>
 interval=2
-color=#ff5555
-border=#ff5555
+command=acpi -b | grep -Po '\d+%'
+border=#ffffff
 border_top=1
-border_right=0
 border_bottom=0
 border_left=0
+border_right=0
 
 [wifi]
-command=iwgetid -r | tr '\n' ' ' && grep $(iwgetid -m | awk '{ printf "%s", $1 }') /proc/net/wireless | awk '{ printf "%i%\n", int($3 * 100 / 70) }'
+command=iwgetid -r | tr '\n' ' ' && grep -oP '^[^\s]+' /proc/net/wireless | xargs && grep -oP '^[^\s]+' /proc/net/wireless | xargs -I@ grep @ /proc/net/wireless | awk '{ printf "%i%\n", int($3 * 100 / 70) }'
 instance=wlp11s0f3u1
 interval=5
-label=<span color="#ff79c6"> </span>
-border=#ff79c6
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [mediaplayer]
-command=playerctl metadata --format "{{ artist }} <span color=\"#bd93f9\">-</span> {{ title }}"
+command=playerctl metadata --format "{{ artist }} <span color=\"#ffffff\">-</span> {{ title }}"
 interval=2
-label=<span color="#bd93f9"> </span>
-border=#bd93f9
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
@@ -45,109 +47,90 @@ border_left=0
 [arch_update]
 command=checkupdates | wc -l
 interval=once
-label=<span color="#1793d1"> </span>
-border=#1793d1
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [home]
-command=df -h /home | awk 'FNR==2 { gsub(/[A-Za-z]/, ""); printf "%i<span color=\"#50fa7b\">GiB</span>\n", $4 }'
+command=df -h /home | grep -oP '\d+(?=\sGiB)' | awk '{ printf "%i<span color=\"#ffffff\">GiB</span>\n", $1 }'
 interval=3
-label=<span color="#50fa7b"> </span>
-border=#50fa7b
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [root]
-command=df -h / | awk 'FNR==2 { gsub(/[A-Za-z]/, ""); printf "%i<span color=\"#f1fa8c\">GiB</span>\n", $4 }'
+command=df -h / | grep -oP '\d+(?=\sGiB)' | awk '{ printf "%i<span color=\"#ffffff\">GiB</span>\n", $1 }'
 interval=3
-label=<span color="#f1fa8c"> </span>
-border=#f1fa8c
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [gpu_stats]
-command=nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | awk '{ printf "%02i<span color=\"#ffb86c\">%</span>", $0}' && nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | awk '{ printf " %i<span color=\"#ffb86c\">°C</span>\n", $0}'
-label=<span color="#ffb86c"><b>GPU: </b></span>
+command=nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | awk '{ printf "%02i<span color=\"#ffffff\">%</span>", $0}' && nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | awk '{ printf " %i<span color=\"#ffffff\">°C</span>\n", $0}'
+label=<span color="#ffffff"><b>GPU: </b></span>
 interval=2
-border=#ffb86c
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [cpu_stats]
-command=sar -u 1 1 | awk 'FNR == 5 { printf "%04.1f<span color=\"#ff5555\">%</span>", (100 - $8) } ' && sensors | awk '{ if ($1 == "CPU" && $2 == "Temperature:") { gsub(/[+°C]/, "") ; printf " %i<span color=\"#ff5555\">°C</span>\n", $3 } }'
+command=sar -u 1 1 | grep -oP '(?<=Average:\s+)\S+' | xargs printf "%.1f%% " && sensors | grep -oP '(?<=Core\s+0:\s+)\d+' | awk '{ printf "%i<span color=\"#ffffff\">°C</span>\n", $1 }'
 interval=2
-label=<span color="#ff5555"><b>CPU: </b></span>
-border=#ff5555
+label=<span color="#ffffff"><b>CPU: </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [memory]
-command=free --giga | awk 'FNR==2{ printf "%i<span color=\"#ff79c6\">GiB</span>\n", $7 }'
+command=free -m | awk 'FNR==2{ printf "%.1f<span color=\"#ffffff\">GiB</span> / %.1f<span color=\"#ffffff\">GiB</span>\n", $3/1024, $2/1024 }'
 interval=2
-label=<span color="#ff79c6"> </span>
-border=#ff79c6
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [volume]
-command=pulseaudio-ctl full-status | awk '{ printf "%i<span color=\"#bd93f9\">%</span>\n", $1 }'
+command=pulseaudio-ctl full-status | grep -oP '\d+' | awk '{ printf "%i<span color=\"#ffffff\">%</span>\n", $1 }'
 interval=1
-label=<span color="#bd93f9"> </span>
-border=#bd93f9
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
-[time_pst]
-command=TZ=":US/Pacific" date '+%I : %M %Z' | awk '{ printf "%s<span color=\"#8be9fd\">%s</span>%s<span color=\"#8be9fd\"> %s</span>\n", $1, $2, $3, $4 }'
+[time]
+command=TZ=":Asia/Kolkata" date '+%I : %M %p'
 interval=1
-label=<span color="#8be9fd"> </span>
-border=#8be9fd
-border_top=1
-border_right=0
-border_bottom=0
-border_left=0
-
-[time_cst]
-command=TZ=":US/Central" date '+%I : %M %Z' | awk '{ printf "%s<span color=\"#50fa7b\">%s</span>%s<span color=\"#50fa7b\"> %s</span>\n", $1, $2, $3, $4 }'
-interval=1
-label=<span color="#50fa7b"> </span>
-border=#50fa7b
-border_top=1
-border_right=0
-border_bottom=0
-border_left=0
-
-[time_est]
-command=TZ=":US/Eastern" date '+%I : %M %Z' | awk '{ printf "%s<span color=\"#f1fa8c\">%s</span>%s<span color=\"#f1fa8c\"> %s</span>\n", $1, $2, $3, $4 }'
-interval=1
-label=<span color="#f1fa8c"> </span>
-border=#f1fa8c
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
 
 [date]
-command=LC_ALL="zh_CN.UTF-8" date '+%Y 年 %B %d 日 %A。' | awk '{ printf "%s<span color=\"#ff5555\">%s%s</span>%s<span color=\"#ff5555\">%s %s</span>\n", $1, $2, $3, $4, $5, $6 }'
+command=date '+%e %B, %Y' | sed 's/  / /g'
 interval=60
-label=<span color="#ff5555"> </span>
-border=#ff5555
+label=<span color="#ffffff"><b> </b></span>
+border=#ffffff
 border_top=1
 border_right=0
 border_bottom=0
 border_left=0
+
