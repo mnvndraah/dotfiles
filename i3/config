@@ -12,6 +12,7 @@ set $mod Mod4
 
 # picom
 exec_always --no-startup-id picom
+exec_always --no-startup-id xinput set-prop 11 'libinput Natural Scrolling Enabled' 1
 
 # Bg
 # Set desktop background
@@ -30,7 +31,7 @@ bindsym $mod+Tab workspace back_and_forth
 exec_always --no-startup-id autotiling
 
 # Hide titlebar
-new_window pixel 3
+new_window pixel 3 
 
 # gaps 
 gaps inner 15
@@ -245,13 +246,13 @@ exec --no-startup-id notify-send "Welcome back $USER!" -i ~/.images/icons8-dog-1
 bindsym $mod+Shift+p exec --no-startup-id i3lock -i ~/Pictures/wall.png
 
 # Volume
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh volume_up
-bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh volume_down
-bindsym XF86AudioMute exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh volume_mute
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/volume.sh increase 1%
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/volume.sh decrease 1%
+bindsym XF86AudioMute exec --no-startup-id ~/.config/i3/scripts/volume.sh toggle
 
 # Brightness
-bindsym XF86MonBrightnessUp exec --no-startup-id ~/.config/i3/scripts/brightness_notif.sh up
-bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/brightness_notif.sh down
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 
 # Bind Applications to workspace
 for_window [class="obs"] move to workspace $workspace0
@@ -268,3 +269,6 @@ assign [class="Code"] workspace $workspace2
 for_window [class=LibreWolf] focus
 for_window [class=kitty] focus
 for_window [class=Code] focus
+
+# ScreenShot
+bindsym Print exec --no-startup-id scrot ~/%Y-%m-%d-%T-screenshot.png && notify-send "Screenshot saved to ~/$(date +"%Y-%m-%d-%T")-screenshot.png"

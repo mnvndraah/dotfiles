@@ -9,9 +9,16 @@
 separator=false
 markup=pango
 
-[workspace]
-command=~/.config/i3blocks/workspaces.sh
-interval=1
+[username]
+command=echo $USER
+interval=60
+label=<span color="#ffffff"><b> </b></span>
+color=#ffffff
+border=#ffffff
+border_top=1
+border_right=0
+border_bottom=0
+border_left=0
 
 [battery]
 label=<span color="#ffffff"><b> </b></span>
@@ -24,7 +31,7 @@ border_left=0
 border_right=0
 
 [wifi]
-command=iwgetid -r | tr '\n' ' ' && grep -oP '^[^\s]+' /proc/net/wireless | xargs && grep -oP '^[^\s]+' /proc/net/wireless | xargs -I@ grep @ /proc/net/wireless | awk '{ printf "%i%\n", int($3 * 100 / 70) }'
+command=nmcli -t -f NAME c show --active | head -n 1
 instance=wlp11s0f3u1
 interval=5
 label=<span color="#ffffff"><b> </b></span>
@@ -35,7 +42,7 @@ border_bottom=0
 border_left=0
 
 [mediaplayer]
-command=playerctl metadata --format "{{ artist }} <span color=\"#ffffff\">-</span> {{ title }}"
+command=player_status=$(playerctl status); if [[ "$player_status" == "Playing" && $(playerctl metadata --format "{{ playerName }}") != "YouTube" ]]; then playerctl metadata --format "{{ artist }} <span color=\"#ffffff\">-</span> {{ title }}"; fi
 interval=2
 label=<span color="#ffffff"><b> </b></span>
 border=#ffffff
